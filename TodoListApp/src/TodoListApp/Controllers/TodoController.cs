@@ -16,12 +16,13 @@ namespace TodoListApp.Controllers
         {
             return View(todoListModel);
         }
+
         [HttpGet]
         public IActionResult Create()
         {
-
             return View();
         }
+
         [HttpPost]
         public IActionResult Create(TodoItemModel item)
         {
@@ -29,11 +30,13 @@ namespace TodoListApp.Controllers
             ((List<TodoItemModel>)todoListModel.Items).Add(item);            
             return RedirectToAction(nameof(Index));
         }
+
         public IActionResult Delete(int id)
         {
             ((List<TodoItemModel>)todoListModel.Items).RemoveAll(item => item.Id == id);
             return RedirectToAction(nameof(Index));
         }
+
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -42,6 +45,7 @@ namespace TodoListApp.Controllers
                 return NotFound();
             return View(editModel);
         }
+
         [HttpPost]
         public IActionResult Edit(TodoItemModel item)
         {
