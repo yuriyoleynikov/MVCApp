@@ -7,24 +7,27 @@ namespace TodoListApp.Models
 {
     public class InMemoryTodoListRepository : ITodoListRepository
     {
-        private static TodoListModel todoListModel = new TodoListModel { Items = new List<TodoItemModel>() };
+        private static TodoList todoList = new TodoList { Items = new List<TodoItem>() };
+        private static IDictionary<string, Guid> userItems = new Dictionary<string, Guid>();
 
-        public void AddItem(string userId, TodoItemModel item)
+        public void AddItem(string userId, TodoItem item)
         {
-            item.itemId = Guid.NewGuid();
-            item.userId = userId;
-            ((List<TodoItemModel>)todoListModel.Items).Add(item);
+            item.Id = Guid.NewGuid();
+            userItems.Add(userId, item.Id);
+            ((List<TodoItem>)todoList.Items).Add(item);
         }
 
         public void DeleteItem(Guid itemId)
         {
-            ((List<TodoItemModel>)todoListModel.Items).RemoveAll(item => item.itemId == itemId);
+            ((List<TodoItem>)todoList.Items).RemoveAll(item => item.Id == itemId);
+            foreach (var kv in userItems.Where(kvp => kvp.Value == itemId).ToList())
+                userItems.Remove(kv);
         }
 
-        public IEnumerable<TodoItemModel> GetTodoListByUser(string userId)
+        public IEnumerable<TodoItem> GetTodoListByUser(string userId)
         {
-            foreach (var item in todoListModel.Items)
-                if (item.userId == userId)
+            foreach (var user in userItems.Where(kvp => kvp.Key == userId).ToList())
+                foreach (var item in todoList.Items.Where(i => i.Id == user.Value))
                     yield return item;
         }
     }

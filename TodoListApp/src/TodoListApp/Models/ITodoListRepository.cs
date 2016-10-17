@@ -7,8 +7,8 @@ namespace TodoListApp.Models
 {
     public interface ITodoListRepository
     {
-        IEnumerable<TodoItemModel> GetTodoListByUser(string userId);
+        IEnumerable<TodoItem> GetTodoListByUser(string userId);
         void DeleteItem(Guid itemId);
-        void AddItem(string userId, TodoItemModel item);
+        void AddItem(string userId, TodoItem item);
     }
 }
