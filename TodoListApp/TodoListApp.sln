@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TodoListApp", "src\TodoListApp\TodoListApp.xproj", "{573F7956-D1AC-4583-B5B9-5ACB0BEC2933}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestTodoListApp", "UnitTestTodoListApp\UnitTestTodoListApp.csproj", "{28EFCA9A-56A3-40FE-8FDA-D64EE615D2A1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{301708FC-6B34-40CB-BBE8-91E475FC7094}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TodoListApp.Tests", "tests\TodoListApp.Tests\TodoListApp.Tests.xproj", "{6D90D09E-056E-4B8F-B3F7-FF1AB8CFB864}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,15 +26,16 @@ Global
 		{573F7956-D1AC-4583-B5B9-5ACB0BEC2933}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{573F7956-D1AC-4583-B5B9-5ACB0BEC2933}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{573F7956-D1AC-4583-B5B9-5ACB0BEC2933}.Release|Any CPU.Build.0 = Release|Any CPU
-		{28EFCA9A-56A3-40FE-8FDA-D64EE615D2A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{28EFCA9A-56A3-40FE-8FDA-D64EE615D2A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{28EFCA9A-56A3-40FE-8FDA-D64EE615D2A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{28EFCA9A-56A3-40FE-8FDA-D64EE615D2A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D90D09E-056E-4B8F-B3F7-FF1AB8CFB864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D90D09E-056E-4B8F-B3F7-FF1AB8CFB864}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D90D09E-056E-4B8F-B3F7-FF1AB8CFB864}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D90D09E-056E-4B8F-B3F7-FF1AB8CFB864}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{573F7956-D1AC-4583-B5B9-5ACB0BEC2933} = {92FCE8D7-9A69-4F5B-9DA3-1182074A9F97}
+		{6D90D09E-056E-4B8F-B3F7-FF1AB8CFB864} = {301708FC-6B34-40CB-BBE8-91E475FC7094}
 	EndGlobalSection
 EndGlobal
