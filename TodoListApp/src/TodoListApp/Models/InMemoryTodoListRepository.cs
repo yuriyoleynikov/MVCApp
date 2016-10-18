@@ -7,28 +7,38 @@ namespace TodoListApp.Models
 {
     public class InMemoryTodoListRepository : ITodoListRepository
     {
-        private static TodoList todoList = new TodoList { Items = new List<TodoItem>() };
-        private static IDictionary<string, Guid> userItems = new Dictionary<string, Guid>();
+        private static IDictionary<string, TodoList> userTodoList = new Dictionary<string, TodoList>();
 
         public void AddItem(string userId, TodoItem item)
         {
-            item.Id = Guid.NewGuid();
-            userItems.Add(userId, item.Id);
-            ((List<TodoItem>)todoList.Items).Add(item);
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+            if (!userTodoList.ContainsKey(userId))
+                userTodoList.Add(userId, new TodoList { Items = new List<TodoItem>() });
+            foreach (var user in userTodoList)
+                if (user.Key == userId)
+                    ((List<TodoItem>)user.Value.Items).Add(item);
         }
 
         public void DeleteItem(Guid itemId)
         {
-            ((List<TodoItem>)todoList.Items).RemoveAll(item => item.Id == itemId);
-            foreach (var kv in userItems.Where(kvp => kvp.Value == itemId).ToList())
-                userItems.Remove(kv);
+            foreach (var user in userTodoList)
+                foreach (var item in user.Value.Items)
+                    if (item.Id == itemId)
+                    {
+                        ((List<TodoItem>)user.Value.Items).Remove(item);
+                        return;
+                    }
         }
 
         public IEnumerable<TodoItem> GetTodoListByUser(string userId)
         {
-            foreach (var user in userItems.Where(kvp => kvp.Key == userId).ToList())
-                foreach (var item in todoList.Items.Where(i => i.Id == user.Value))
-                    yield return item;
+            foreach (var user in userTodoList)
+                if (user.Key == userId)
+                    foreach (var item in user.Value.Items)
+                        yield return item;
         }
     }
 }
