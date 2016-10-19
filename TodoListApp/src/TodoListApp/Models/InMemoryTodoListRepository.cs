@@ -7,7 +7,7 @@ namespace TodoListApp.Models
 {
     public class InMemoryTodoListRepository : ITodoListRepository
     {
-        private static IDictionary<string, TodoList> _todoListByUser = new Dictionary<string, TodoList>();
+        private IDictionary<string, TodoList> _todoListByUser = new Dictionary<string, TodoList>();
 
         public void AddItem(string userId, TodoItem item)
         {
@@ -16,7 +16,7 @@ namespace TodoListApp.Models
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
             if (item.Id == default(Guid))
-                throw new ArgumentException(nameof(item));
+                throw new ArgumentException("item.Id must not be empty", nameof(item));
             TodoList todoList;
             if (!_todoListByUser.TryGetValue(userId, out todoList))
             {
@@ -29,7 +29,7 @@ namespace TodoListApp.Models
         public void DeleteItem(Guid itemId)
         {
             if (itemId == Guid.Empty)
-                throw new ArgumentException(nameof(itemId));
+                throw new ArgumentException("itemId must not be empty", nameof(itemId));
             foreach (var user in _todoListByUser)
                 foreach (var item in user.Value.Items)
                     if (item.Id == itemId)
