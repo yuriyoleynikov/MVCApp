@@ -7,7 +7,7 @@ namespace TodoListApp.Models
 {
     public class InMemoryTodoListRepository : ITodoListRepository
     {
-        private static IDictionary<string, TodoList> userTodoList = new Dictionary<string, TodoList>();
+        private static IDictionary<string, TodoList> _todoListByUser = new Dictionary<string, TodoList>();
 
         public void AddItem(string userId, TodoItem item)
         {
@@ -15,16 +15,22 @@ namespace TodoListApp.Models
                 throw new ArgumentNullException(nameof(userId));
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
-            if (!userTodoList.ContainsKey(userId))
-                userTodoList.Add(userId, new TodoList { Items = new List<TodoItem>() });
-            foreach (var user in userTodoList)
-                if (user.Key == userId)
-                    ((List<TodoItem>)user.Value.Items).Add(item);
+            if (item.Id == default(Guid))
+                throw new ArgumentException(nameof(item));
+            TodoList todoList;
+            if (!_todoListByUser.TryGetValue(userId, out todoList))
+            {
+                todoList = new TodoList { Items = new List<TodoItem>() };
+                _todoListByUser.Add(userId, todoList);
+            }
+            ((List<TodoItem>)todoList.Items).Add(item);
         }
 
         public void DeleteItem(Guid itemId)
         {
-            foreach (var user in userTodoList)
+            if (itemId== Guid.Empty)
+                throw new ArgumentException(nameof(itemId));
+            foreach (var user in _todoListByUser)
                 foreach (var item in user.Value.Items)
                     if (item.Id == itemId)
                     {
@@ -35,7 +41,7 @@ namespace TodoListApp.Models
 
         public IEnumerable<TodoItem> GetTodoListByUser(string userId)
         {
-            foreach (var user in userTodoList)
+            foreach (var user in _todoListByUser)
                 if (user.Key == userId)
                     foreach (var item in user.Value.Items)
                         yield return item;
