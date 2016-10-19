@@ -32,6 +32,16 @@ namespace TodoApp.Services.Tests
 		}
 
 		[Fact]
+		public void AddItem_Throws_WhenItemIdIsEmpty()
+		{
+			ITodoListRepository repository = new InMemoryTodoListRepository();
+
+			new Action(() => repository.AddItem("user", new TodoItem()))
+				.ShouldThrow<ArgumentException>()
+				.And.ParamName.Should().Be("item");
+		}
+
+		[Fact]
 		public void AddItem_Succeeds_WhenEverythingIsPassed()
 		{
 			ITodoListRepository repository = new InMemoryTodoListRepository();
@@ -47,6 +57,16 @@ namespace TodoApp.Services.Tests
 			repository.AddItem("user", new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" });
 			repository.AddItem("user", new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" });
 		}
+
+        [Fact]
+        public void DeleteItem_Throws_WhenEmptyItemIdPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            new Action(() => repository.DeleteItem(Guid.Empty))
+                .ShouldThrow<ArgumentException>()
+                .And.ParamName.Should().Be("itemId");
+        }
 
 		[Fact]
 		public void GetTodoListByUser_ReturnsAddedItem_WhenAdded()
