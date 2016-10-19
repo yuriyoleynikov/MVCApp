@@ -28,7 +28,7 @@ namespace TodoListApp.Models
 
         public void DeleteItem(Guid itemId)
         {
-            if (itemId== Guid.Empty)
+            if (itemId == Guid.Empty)
                 throw new ArgumentException(nameof(itemId));
             foreach (var user in _todoListByUser)
                 foreach (var item in user.Value.Items)
@@ -41,10 +41,13 @@ namespace TodoListApp.Models
 
         public IEnumerable<TodoItem> GetTodoListByUser(string userId)
         {
-            foreach (var user in _todoListByUser)
-                if (user.Key == userId)
-                    foreach (var item in user.Value.Items)
-                        yield return item;
+            TodoList todoList;
+            if (_todoListByUser.TryGetValue(userId, out todoList))
+            {
+                foreach (var item in todoList.Items)
+                    yield return item;
+            }
+            yield break;
         }
     }
 }
