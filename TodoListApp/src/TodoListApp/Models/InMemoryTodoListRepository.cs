@@ -8,6 +8,13 @@ namespace TodoListApp.Models
     public class InMemoryTodoListRepository : ITodoListRepository
     {
         private IDictionary<string, TodoList> _todoListByUser = new Dictionary<string, TodoList>();
+        private IDictionary<Guid, Entry> _entriesById = new Dictionary<Guid, Entry>();
+
+        private class Entry
+        {
+            public string UserId;
+            public TodoItem Item;
+        }
 
         public void AddItem(string userId, TodoItem item)
         {
@@ -24,30 +31,33 @@ namespace TodoListApp.Models
                 _todoListByUser.Add(userId, todoList);
             }
             ((List<TodoItem>)todoList.Items).Add(item);
+            _entriesById.Add(item.Id, new Entry { UserId=userId, Item=item});
         }
 
         public void DeleteItem(Guid itemId)
         {
             if (itemId == Guid.Empty)
                 throw new ArgumentException("itemId must not be empty", nameof(itemId));
-            foreach (var user in _todoListByUser)
-                foreach (var item in user.Value.Items)
-                    if (item.Id == itemId)
-                    {
-                        ((List<TodoItem>)user.Value.Items).Remove(item);
-                        return;
-                    }
+            
+            Entry entry;
+            if (_entriesById.TryGetValue(itemId, out entry))
+            {
+                var userId = entry.UserId;
+                var todoList = _todoListByUser[userId];
+                ((List<TodoItem>)todoList.Items).Remove(entry.Item);
+                _entriesById.Remove(itemId);
+            }
         }
 
         public IEnumerable<TodoItem> GetTodoListByUser(string userId)
         {
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
+
             TodoList todoList;
             if (_todoListByUser.TryGetValue(userId, out todoList))
-            {
-                foreach (var item in todoList.Items)
-                    yield return item;
-            }
-            yield break;
+                return todoList.Items;
+            return Enumerable.Empty<TodoItem>();
         }
     }
 }
