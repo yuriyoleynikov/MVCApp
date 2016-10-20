@@ -10,7 +10,7 @@ namespace TodoListApp.Models
         private IDictionary<string, TodoList> _todoListByUser = new Dictionary<string, TodoList>();
         private IDictionary<Guid, Entry> _entriesById = new Dictionary<Guid, Entry>();
 
-        private class Entry//
+        private class Entry
         {
             public string UserId;
             public TodoItem Item;
@@ -24,21 +24,20 @@ namespace TodoListApp.Models
                 throw new ArgumentNullException(nameof(item));
             if (item.Id == default(Guid))
                 throw new ArgumentException("item.Id must not be empty", nameof(item));
+
             TodoList todoList;
             if (!_todoListByUser.TryGetValue(userId, out todoList))
-            {
-                todoList = new TodoList { Items = new List<TodoItem>() };
-                _todoListByUser.Add(userId, todoList);
-            }
-            ((List<TodoItem>)todoList.Items).Add(item);
-            _entriesById.Add(item.Id, new Entry { UserId=userId, Item=item});
+                _todoListByUser.Add(userId, new TodoList { Items = new List<TodoItem> { item } });
+            else
+                ((List<TodoItem>)todoList.Items).Add(item);
+            _entriesById.Add(item.Id, new Entry { UserId = userId, Item = item });
         }
 
         public void DeleteItem(Guid itemId)
         {
             if (itemId == Guid.Empty)
                 throw new ArgumentException("itemId must not be empty", nameof(itemId));
-            
+
             Entry entry;
             if (_entriesById.TryGetValue(itemId, out entry))
             {
