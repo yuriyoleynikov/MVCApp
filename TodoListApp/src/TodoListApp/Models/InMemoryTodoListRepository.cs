@@ -10,7 +10,7 @@ namespace TodoListApp.Models
         private IDictionary<string, TodoList> _todoListByUser = new Dictionary<string, TodoList>();
         private IDictionary<Guid, Entry> _entriesById = new Dictionary<Guid, Entry>();
 
-        private class Entry
+        private class Entry//
         {
             public string UserId;
             public TodoItem Item;
