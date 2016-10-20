@@ -68,7 +68,17 @@ namespace TodoApp.Services.Tests
                 .And.ParamName.Should().Be("itemId");
         }
 
-		[Fact]
+        [Fact]
+        public void GetTodoListByUser_Throws_WhenNullPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            new Action(() => repository.GetTodoListByUser(null))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("userId");
+        }
+
+        [Fact]
 		public void GetTodoListByUser_ReturnsAddedItem_WhenAdded()
 		{
 			ITodoListRepository repository = new InMemoryTodoListRepository();
