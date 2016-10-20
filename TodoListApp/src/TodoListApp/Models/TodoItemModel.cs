@@ -13,10 +13,5 @@ namespace TodoListApp.Models
         public string Name { get; set; }
         [Display(Name = "Description")]
         public string Description { get; set; }
-    }
-    public class TodoListModel
-    {
-        public IEnumerable<TodoItemModel> Items { get; set; }
-        public string Name { get; set; }
-    }
+    }    
 }
