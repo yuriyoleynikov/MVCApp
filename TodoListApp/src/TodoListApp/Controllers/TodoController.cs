@@ -9,12 +9,11 @@ namespace TodoListApp.Controllers
 {
     public class TodoController : Controller
     {
-        private static TodoListModel todoListModel = new TodoListModel { Items = new List<TodoItemModel>() };
-        private static int lastId = 0;
-        
+        private static InMemoryTodoListRepository memory = new InMemoryTodoListRepository();
+
         public IActionResult Index()
         {
-            return View(todoListModel);
+            return View(new TodoList { Items = memory.GetTodoListByUser("user") });
         }
 
         [HttpGet]
@@ -24,32 +23,34 @@ namespace TodoListApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(TodoItemModel item)
+        public IActionResult Create(TodoItem item)
         {
-            item.Id = ++lastId;
-            ((List<TodoItemModel>)todoListModel.Items).Add(item);            
+            item.Id = Guid.NewGuid();
+            memory.AddItem("user", item);
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public IActionResult Delete(Guid itemId)
         {
-            ((List<TodoItemModel>)todoListModel.Items).RemoveAll(item => item.Id == id);
+            memory.DeleteItem(itemId);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(Guid id)
         {
-            var editModel = todoListModel.Items.Where(item => item.Id == id).SingleOrDefault();
+            throw new FormatException("Edit not work");
+            /*var editModel = todoListModel.Items.Where(item => item.Id == id).SingleOrDefault();
             if (editModel == null)
                 return NotFound();
-            return View(editModel);
+            return View(editModel);*/
         }
 
         [HttpPost]
-        public IActionResult Edit(TodoItemModel item)
+        public IActionResult Edit(TodoItem item)
         {
-            foreach (var itemInList in todoListModel.Items)
+            throw new FormatException("Edit not work");
+            /*foreach (var itemInList in todoListModel.Items)
             {
                 if (itemInList.Id == item.Id)
                 {
@@ -58,7 +59,7 @@ namespace TodoListApp.Controllers
                     return RedirectToAction(nameof(Index));
                 }
             }
-            return NotFound();
+            return NotFound();*/
         }
     }
 }
