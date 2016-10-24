@@ -30,9 +30,9 @@ namespace TodoListApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(Guid itemId)
+        public IActionResult Delete(Guid id)
         {
-            memory.DeleteItem(itemId);
+            memory.DeleteItem(id);
             return RedirectToAction(nameof(Index));
         }
 
