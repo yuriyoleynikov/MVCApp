@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 
 namespace TodoListApp.Models
@@ -57,6 +58,37 @@ namespace TodoListApp.Models
             if (_todoListByUser.TryGetValue(userId, out todoList))
                 return todoList.Items;
             return Enumerable.Empty<TodoItem>();
+        }
+
+        public TodoItem GetItemByUserAndId(string userId, Guid itemId)
+        {
+            if (itemId == Guid.Empty)
+                throw new ArgumentException("itemId must not be empty", nameof(itemId));
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
+
+            Entry entry;
+            if (_entriesById.TryGetValue(itemId, out entry))
+                if (userId == entry.UserId)
+                    return entry.Item;
+            return null;
+        }
+
+        public void Update(string userId, TodoItem item)
+        {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
+
+            Entry entry;
+            if (!_entriesById.TryGetValue(item.Id, out entry))
+                throw new KeyNotFoundException("Item was not found.");
+            if (userId != entry.UserId)
+                throw new SecurityException("User does not own the item.");
+
+            entry.Item.Name = item.Name;
+            entry.Item.Description = item.Description;
         }
     }
 }

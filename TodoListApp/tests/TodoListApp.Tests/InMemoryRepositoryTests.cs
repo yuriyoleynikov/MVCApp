@@ -142,5 +142,87 @@ namespace TodoApp.Services.Tests
 
             repository.GetTodoListByUser("user").Should().Equal(item1, item3);
         }
+
+        [Fact]
+        public void GetItemByUserAndId_ReturnsEmpty_WhenItIsNew()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            repository.GetItemByUserAndId("user", Guid.NewGuid()).Should().Equals(null);
+        }
+
+        [Fact]
+        public void GetItemByUserAndId_Succeeds_WhenEverythingIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            repository.AddItem("user", item2);
+            var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
+            repository.AddItem("user", item3);
+
+            repository.GetItemByUserAndId("user", item1.Id).Should().Equals(item1);
+            
+        }
+
+        [Fact]
+        public void GetItemByUserAndId_Fails_WhenNullAsUserIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+
+            new Action(() => repository.GetItemByUserAndId(null, item1.Id)).ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("userId");
+        }
+
+        [Fact]
+        public void GetItemByUserAndId_WhenNullAsItemIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+
+            new Action(() => repository.GetItemByUserAndId("user", Guid.Empty)).ShouldThrow<ArgumentException>().And.ParamName.Should().Be("itemId");
+        }
+
+        [Fact]
+        public void Update_Succeeds_WhenEverythingIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            var item3 = new TodoItem { Id = item1.Id, Name = "Item 2" };
+            repository.Update("user", new TodoItem { Id = item1.Id, Description = item2.Description, Name = item2.Name });
+
+            repository.GetItemByUserAndId("user", item1.Id).Name.Should().Be("Item 2");
+        }
+
+        [Fact]
+        public void Update_Fails_WhenNullAsUserIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+
+            new Action(() => repository.Update(null, item1)).ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("userId");
+        }
+
+        [Fact]
+        public void Update_WhenNullAsItemIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+
+            new Action(() => repository.Update("user", null)).ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("item");
+        }
     }
 }
