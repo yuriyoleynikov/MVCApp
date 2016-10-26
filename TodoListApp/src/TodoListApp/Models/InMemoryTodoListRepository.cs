@@ -34,19 +34,19 @@ namespace TodoListApp.Models
             _entriesById.Add(item.Id, new Entry { UserId = userId, Item = item });
         }
 
-        public void DeleteItem(Guid itemId)
+        public void DeleteItem(string userId, Guid itemId)
         {
             if (itemId == Guid.Empty)
                 throw new ArgumentException("itemId must not be empty", nameof(itemId));
 
-            Entry entry;
+            /*Entry entry;
             if (_entriesById.TryGetValue(itemId, out entry))
             {
                 var userId = entry.UserId;
                 var todoList = _todoListByUser[userId];
                 ((List<TodoItem>)todoList.Items).Remove(entry.Item);
                 _entriesById.Remove(itemId);
-            }
+            }*/
         }
 
         public IEnumerable<TodoItem> GetTodoListByUser(string userId)
