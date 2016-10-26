@@ -61,13 +61,54 @@ namespace TodoApp.Services.Tests
         }
 
         [Fact]
+        public void DeleteItem_Throws_WhenEmptyUserIdPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            new Action(() => repository.DeleteItem(null, Guid.NewGuid()))
+                .ShouldThrow<ArgumentNullException>()
+                .And.ParamName.Should().Be("userId");
+        }
+
+        [Fact]
         public void DeleteItem_Throws_WhenEmptyItemIdPassed()
         {
             ITodoListRepository repository = new InMemoryTodoListRepository();
 
-            new Action(() => repository.DeleteItem(Guid.Empty))
+            new Action(() => repository.DeleteItem("user", Guid.Empty))
                 .ShouldThrow<ArgumentException>()
                 .And.ParamName.Should().Be("itemId");
+        }
+
+        [Fact]
+        public void DeleteItem_Throws_WhenItemIsMissing()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            new Action(() => repository.DeleteItem("user", Guid.NewGuid()))
+                .ShouldThrow<KeyNotFoundException>();
+        }
+
+        [Fact]
+        public void DeleteItem_Throws_WhenUserMismatches()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user1", item);
+
+            new Action(() => repository.DeleteItem("user2", item.Id))
+                .ShouldThrow<SecurityException>();
+        }
+
+        [Fact]
+        public void DeleteItem_Succeeds_WhenEverythingIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user1", item);
+
+            new Action(() => repository.DeleteItem("user1", item.Id))
+                .ShouldNotThrow();
         }
 
         [Fact]
@@ -124,7 +165,7 @@ namespace TodoApp.Services.Tests
 
             var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             repository.AddItem("user", item);
-            repository.DeleteItem(item.Id);
+            repository.DeleteItem("user", item.Id);
 
             repository.GetTodoListByUser("user").Should().BeEmpty();
         }
@@ -140,7 +181,7 @@ namespace TodoApp.Services.Tests
             repository.AddItem("user", item2);
             var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
             repository.AddItem("user", item3);
-            repository.DeleteItem(item2.Id);
+            repository.DeleteItem("user", item2.Id);
 
             repository.GetTodoListByUser("user").Should().Equal(item1, item3);
         }
