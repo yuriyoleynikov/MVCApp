@@ -10,5 +10,7 @@ namespace TodoListApp.Models
         IEnumerable<TodoItem> GetTodoListByUser(string userId);
         void DeleteItem(Guid itemId);
         void AddItem(string userId, TodoItem item);
+        TodoItem GetItemByUserAndId(string userId, Guid itemId);
+        void Update(string userId, TodoItem item);
     }
 }
