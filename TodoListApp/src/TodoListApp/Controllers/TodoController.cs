@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Models;
+using System.Security;
 
 namespace TodoListApp.Controllers
 {
@@ -39,27 +40,29 @@ namespace TodoListApp.Controllers
         [HttpGet]
         public IActionResult Edit(Guid id)
         {
-            throw new FormatException("Edit not work");
-            /*var editModel = todoListModel.Items.Where(item => item.Id == id).SingleOrDefault();
+            var editModel = memory.GetItemByUserAndId("user", id);
             if (editModel == null)
                 return NotFound();
-            return View(editModel);*/
+            return View(editModel);
         }
 
         [HttpPost]
         public IActionResult Edit(TodoItem item)
         {
-            throw new FormatException("Edit not work");
-            /*foreach (var itemInList in todoListModel.Items)
+            try
             {
-                if (itemInList.Id == item.Id)
-                {
-                    itemInList.Name = item.Name;
-                    itemInList.Description = item.Description;
-                    return RedirectToAction(nameof(Index));
-                }
+                memory.Update("user", item);
             }
-            return NotFound();*/
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (SecurityException)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
