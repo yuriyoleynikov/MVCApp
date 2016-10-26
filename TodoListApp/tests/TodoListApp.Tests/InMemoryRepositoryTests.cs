@@ -2,6 +2,8 @@
 using Xunit;
 using FluentAssertions;
 using TodoListApp.Models;
+using System.Security;
+using System.Collections.Generic;
 
 namespace TodoApp.Services.Tests
 {
@@ -168,6 +170,21 @@ namespace TodoApp.Services.Tests
         }
 
         [Fact]
+        public void GetItemByUserAndId_Succeeds_WhenUserNoHaveThisItemIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            repository.AddItem("user2", item2);
+            var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
+            repository.AddItem("user", item3);
+
+            repository.GetItemByUserAndId("user2", item1.Id).Should().Equals(null);
+        }
+
+        [Fact]
         public void GetItemByUserAndId_Fails_WhenNullAsUserIsPassed()
         {
             ITodoListRepository repository = new InMemoryTodoListRepository();
@@ -223,6 +240,36 @@ namespace TodoApp.Services.Tests
             repository.AddItem("user", item1);
 
             new Action(() => repository.Update("user", null)).ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("item");
+        }
+
+        [Fact]
+        public void Update_Fails_WhenUserNoHaveThisItemIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            repository.AddItem("user2", item2);
+            var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
+            
+            new Action(() => 
+            repository.Update("user2", new TodoItem { Id = item1.Id, Description = item3.Description, Name = item3.Name }))
+            .ShouldThrow<SecurityException>();
+        }
+
+        [Fact]
+        public void Update_Fils_WhenImemIdNotFoundIsPassed()
+        {
+            ITodoListRepository repository = new InMemoryTodoListRepository();
+
+            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            repository.AddItem("user", item1);
+            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+
+            new Action(() =>
+            repository.Update("user", new TodoItem { Id = Guid.NewGuid(), Description = item2.Description, Name = item2.Name }))
+            .ShouldThrow<KeyNotFoundException>();
         }
     }
 }
