@@ -150,7 +150,7 @@ namespace TodoApp.Services.Tests
         {
             ITodoListRepository repository = new InMemoryTodoListRepository();
 
-            repository.GetItemByUserAndId("user", Guid.NewGuid()).Should().Equals(null);
+            repository.GetItemByUserAndId("user", Guid.NewGuid()).Should().Be(null);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace TodoApp.Services.Tests
             var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
             repository.AddItem("user", item3);
 
-            repository.GetItemByUserAndId("user", item1.Id).Should().Equals(item1);
+            repository.GetItemByUserAndId("user", item1.Id).Should().Be(item1);
             
         }
 
@@ -181,7 +181,7 @@ namespace TodoApp.Services.Tests
             var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
             repository.AddItem("user", item3);
 
-            repository.GetItemByUserAndId("user2", item1.Id).Should().Equals(null);
+            repository.GetItemByUserAndId("user2", item1.Id).Should().Be(null);
         }
 
         [Fact]
