@@ -34,19 +34,23 @@ namespace TodoListApp.Models
             _entriesById.Add(item.Id, new Entry { UserId = userId, Item = item });
         }
 
-        public void DeleteItem(Guid itemId)
+        public void DeleteItem(string userId, Guid itemId)
         {
+            if (userId == null)
+                throw new ArgumentNullException(nameof(userId));
             if (itemId == Guid.Empty)
                 throw new ArgumentException("itemId must not be empty", nameof(itemId));
 
             Entry entry;
-            if (_entriesById.TryGetValue(itemId, out entry))
-            {
-                var userId = entry.UserId;
-                var todoList = _todoListByUser[userId];
-                ((List<TodoItem>)todoList.Items).Remove(entry.Item);
-                _entriesById.Remove(itemId);
-            }
+            if (!_entriesById.TryGetValue(itemId, out entry))
+                throw new KeyNotFoundException("Item was not found.");
+            if (entry.UserId != userId)
+                throw new SecurityException("User does not own the item.");
+
+            TodoList todoList;
+            _todoListByUser.TryGetValue(userId, out todoList);
+            ((List<TodoItem>)todoList.Items).Remove(entry.Item);
+            _entriesById.Remove(itemId);
         }
 
         public IEnumerable<TodoItem> GetTodoListByUser(string userId)
