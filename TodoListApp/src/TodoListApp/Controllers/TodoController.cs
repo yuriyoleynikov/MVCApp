@@ -64,5 +64,13 @@ namespace TodoListApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Details(Guid id)
+        {
+            var detailsModel = memory.GetItemByUserAndId("user", id);
+            if (detailsModel == null)
+                return NotFound();
+            return View(detailsModel);
+        }
     }
 }
