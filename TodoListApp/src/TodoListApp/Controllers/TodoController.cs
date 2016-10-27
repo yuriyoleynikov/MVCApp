@@ -10,7 +10,7 @@ namespace TodoListApp.Controllers
 {
     public class TodoController : Controller
     {
-        private static InMemoryTodoListRepository memory = new InMemoryTodoListRepository();
+        private static ITodoListRepository memory = new InMemoryTodoListRepository();
 
         public IActionResult Index()
         {
