@@ -33,7 +33,19 @@ namespace TodoListApp.Controllers
 
         public IActionResult Delete(Guid id)
         {
-            memory.DeleteItem(id);
+            try
+            {
+                memory.DeleteItem("user", id);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (SecurityException)
+            {
+                return NotFound();
+            }
+            
             return RedirectToAction(nameof(Index));
         }
 
