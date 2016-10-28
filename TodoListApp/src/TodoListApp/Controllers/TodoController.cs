@@ -9,24 +9,22 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TodoListApp.Controllers
 {
+    [Authorize]
     public class TodoController : Controller
     {
         private static ITodoListRepository memory = new InMemoryTodoListRepository();
-
-        [Authorize]
+        
         public IActionResult Index()
         {
             return View(new TodoList { Items = memory.GetTodoListByUser(User.Identity.Name) });
         }
-
-        [Authorize]
+        
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
-
-        [Authorize]
+        
         [HttpPost]
         public IActionResult Create(TodoItem item)
         {
@@ -34,8 +32,7 @@ namespace TodoListApp.Controllers
             memory.AddItem(User.Identity.Name, item);
             return RedirectToAction(nameof(Index));
         }
-
-        [Authorize]
+        
         public IActionResult Delete(Guid id)
         {
             try
@@ -53,8 +50,7 @@ namespace TodoListApp.Controllers
             
             return RedirectToAction(nameof(Index));
         }
-
-        [Authorize]
+        
         [HttpGet]
         public IActionResult Edit(Guid id)
         {
@@ -63,8 +59,7 @@ namespace TodoListApp.Controllers
                 return NotFound();
             return View(editModel);
         }
-
-        [Authorize]
+        
         [HttpPost]
         public IActionResult Edit(TodoItem item)
         {
@@ -83,8 +78,7 @@ namespace TodoListApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        [Authorize]
+        
         public IActionResult Details(Guid id)
         {
             var detailsModel = memory.GetItemByUserAndId(User.Identity.Name, id);
