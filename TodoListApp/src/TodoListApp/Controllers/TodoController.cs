@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using TodoListApp.Models;
 using System.Security;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TodoListApp.Controllers
 {
@@ -13,10 +14,12 @@ namespace TodoListApp.Controllers
     public class TodoController : Controller
     {
         private static ITodoListRepository memory = new InMemoryTodoListRepository();
-        
+
+        private string UserId => User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
         public IActionResult Index()
         {
-            return View(new TodoList { Items = memory.GetTodoListByUser(User.Identity.Name) });
+            return View(new TodoList { Items = memory.GetTodoListByUser(UserId) });
         }
         
         [HttpGet]
@@ -29,7 +32,7 @@ namespace TodoListApp.Controllers
         public IActionResult Create(TodoItem item)
         {
             item.Id = Guid.NewGuid();
-            memory.AddItem(User.Identity.Name, item);
+            memory.AddItem(UserId, item);
             return RedirectToAction(nameof(Index));
         }
         
@@ -37,7 +40,7 @@ namespace TodoListApp.Controllers
         {
             try
             {
-                memory.DeleteItem(User.Identity.Name, id);
+                memory.DeleteItem(UserId, id);
             }
             catch (KeyNotFoundException)
             {
@@ -54,7 +57,7 @@ namespace TodoListApp.Controllers
         [HttpGet]
         public IActionResult Edit(Guid id)
         {
-            var editModel = memory.GetItemByUserAndId(User.Identity.Name, id);
+            var editModel = memory.GetItemByUserAndId(UserId, id);
             if (editModel == null)
                 return NotFound();
             return View(editModel);
@@ -65,7 +68,7 @@ namespace TodoListApp.Controllers
         {
             try
             {
-                memory.Update(User.Identity.Name, item);
+                memory.Update(UserId, item);
             }
             catch (KeyNotFoundException)
             {
@@ -81,7 +84,7 @@ namespace TodoListApp.Controllers
         
         public IActionResult Details(Guid id)
         {
-            var detailsModel = memory.GetItemByUserAndId(User.Identity.Name, id);
+            var detailsModel = memory.GetItemByUserAndId(UserId, id);
             if (detailsModel == null)
                 return NotFound();
             return View(detailsModel);
