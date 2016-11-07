@@ -13,7 +13,8 @@ namespace TodoListApp.Controllers
     [Authorize]
     public class TodoController : Controller
     {
-        private static ITodoListRepository memory = new InMemoryTodoListRepository();
+
+        private static ITodoListRepository memory = new InDatebaseTodoListRepository();
 
         private string UserId => User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
