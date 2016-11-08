@@ -8,7 +8,8 @@
     "xunit": "2.1.0",
     "dotnet-test-xunit": "2.2.0-preview2-build1029", //"1.0.0-rc2-192208-24"
     "FluentAssertions": "4.15.0",
-    "TodoListApp": { "target": "project" }
+    "TodoListApp": { "target": "project" },
+    "Microsoft.EntityFrameworkCore.InMemory": "1.0.1"
   },
   "testRunner": "xunit",
   "frameworks": {

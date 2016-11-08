@@ -55,6 +55,9 @@ namespace TodoListApp
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.AddTransient<ITodoListRepository, InDatebaseTodoListRepository>();
+            //services.AddSingleton<ITodoListRepository, InMemoryTodoListRepository>(); // - for Memory
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

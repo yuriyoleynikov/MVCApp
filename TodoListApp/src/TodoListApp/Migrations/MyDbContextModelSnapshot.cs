@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using TodoListApp.Models;
+using TodoListApp.Data;
 
 namespace TodoListApp.Migrations
 {
