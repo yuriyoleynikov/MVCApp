@@ -157,13 +157,13 @@ namespace TodoApp.Services.Tests
         [Fact]
         public void DeleteItem_Throws_WhenUserMismatches()
         {
-            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
-
             var options = CreateNewContextOptions();
+            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
             using (var repository = new MyDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
+
                 service.AddItem("user1", item);
             }
             using (var repository = new MyDbContext(options))
@@ -178,17 +178,19 @@ namespace TodoApp.Services.Tests
         [Fact]
         public void DeleteItem_Succeeds_WhenEverythingIsPassed()
         {
-            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             var options = CreateNewContextOptions();
+            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
             using (var repository = new MyDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
+
                 service.AddItem("user1", item);
             }
             using (var repository = new MyDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
+
                 new Action(() => service.DeleteItem("user1", item.Id))
                 .ShouldNotThrow();
             }
@@ -233,7 +235,6 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsAllAddedItemsInTheSameOrder()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
             var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
@@ -241,7 +242,6 @@ namespace TodoApp.Services.Tests
             using (var repository = new MyDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
-
 
                 service.AddItem("user", item1);
                 service.AddItem("user", item2);
@@ -259,7 +259,6 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsEmpty_WhenAddedItemsForOtherUser()
         {
             var options = CreateNewContextOptions();
-
             var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
             using (var repository = new MyDbContext(options))
@@ -280,7 +279,6 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsEmpty_WhenSingleItemAddedAndDeleted()
         {
             var options = CreateNewContextOptions();
-
             var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
             using (var repository = new MyDbContext(options))
@@ -302,7 +300,6 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsWithoutDeletedItem_WhenItemAddedAndDeleted()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
             var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
@@ -341,7 +338,6 @@ namespace TodoApp.Services.Tests
         public void GetItemByUserAndId_Succeeds_WhenEverythingIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
             var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
@@ -366,7 +362,6 @@ namespace TodoApp.Services.Tests
         public void GetItemByUserAndId_Succeeds_WhenUserNoHaveThisItemIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
             var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
@@ -391,7 +386,6 @@ namespace TodoApp.Services.Tests
         public void GetItemByUserAndId_Fails_WhenNullAsUserIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
             using (var repository = new MyDbContext(options))
@@ -403,6 +397,7 @@ namespace TodoApp.Services.Tests
             using (var repository = new MyDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
+
                 new Action(() => service.GetItemByUserAndId(null, item1.Id)).ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("userId");
             }
         }
@@ -411,7 +406,6 @@ namespace TodoApp.Services.Tests
         public void GetItemByUserAndId_WhenNullAsItemIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
             using (var repository = new MyDbContext(options))
@@ -423,6 +417,7 @@ namespace TodoApp.Services.Tests
             using (var repository = new MyDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
+
                 new Action(() => service.GetItemByUserAndId("user", Guid.Empty)).ShouldThrow<ArgumentException>().And.ParamName.Should().Be("itemId");
             }
         }
@@ -431,7 +426,6 @@ namespace TodoApp.Services.Tests
         public void Update_Succeeds_WhenEverythingIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
             var item3 = new TodoItem { Id = item1.Id, Name = "Item 2" };
@@ -455,7 +449,6 @@ namespace TodoApp.Services.Tests
         public void Update_Fails_WhenNullAsUserIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
             using (var repository = new MyDbContext(options))
@@ -476,7 +469,6 @@ namespace TodoApp.Services.Tests
         public void Update_WhenNullAsItemIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
             using (var repository = new MyDbContext(options))
@@ -497,7 +489,6 @@ namespace TodoApp.Services.Tests
         public void Update_Fails_WhenUserNoHaveThisItemIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
             var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
@@ -523,9 +514,9 @@ namespace TodoApp.Services.Tests
         public void Update_Fils_WhenImemIdNotFoundIsPassed()
         {
             var options = CreateNewContextOptions();
-
             var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
             var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+
             using (var repository = new MyDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
@@ -537,9 +528,9 @@ namespace TodoApp.Services.Tests
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                new Action(() =>
-        service.Update("user", new TodoItem { Id = Guid.NewGuid(), Description = item2.Description, Name = item2.Name }))
-        .ShouldThrow<KeyNotFoundException>();
+                new Action(() => service
+                .Update("user", new TodoItem { Id = Guid.NewGuid(), Description = item2.Description, Name = item2.Name }))
+                .ShouldThrow<KeyNotFoundException>();
             }
         }
     }
