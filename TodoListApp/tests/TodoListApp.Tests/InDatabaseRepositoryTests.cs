@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Data;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace TodoApp.Services.Tests
 {
@@ -28,6 +29,8 @@ namespace TodoApp.Services.Tests
 
             return builder.Options;
         }
+        private static bool CompareTodoItem(TodoItem item1, TodoItem item2) =>
+            item1 == item2 || (item1.Id == item2.Id && item1.Name == item2.Name && item1.Description == item2.Description);
 
         [Fact]
         public void GetTodoListByUser_ReturnsEmpty_WhenItIsNew()
@@ -227,7 +230,7 @@ namespace TodoApp.Services.Tests
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                service.GetTodoListByUser("user").Should().Equal(item);
+                service.GetTodoListByUser("user").Should().Equal(new[] { item }, CompareTodoItem);
             }
         }
 
@@ -251,7 +254,7 @@ namespace TodoApp.Services.Tests
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                service.GetTodoListByUser("user").Should().Equal(item1, item2, item3);
+                service.GetTodoListByUser("user").Should().Equal(new[] { item1, item2, item3 }, CompareTodoItem);
             }
         }
 
@@ -317,7 +320,7 @@ namespace TodoApp.Services.Tests
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                service.GetTodoListByUser("user").Should().Equal(item1, item3);
+                service.GetTodoListByUser("user").Should().Equal(new[] { item1, item3 }, CompareTodoItem);
             }
         }
 
@@ -354,7 +357,7 @@ namespace TodoApp.Services.Tests
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                service.GetItemByUserAndId("user", item1.Id).Should().Be(item1);
+                service.GetItemByUserAndId("user", item1.Id).Should().Match<TodoItem>(x => CompareTodoItem(x, item1));
             }
         }
 
