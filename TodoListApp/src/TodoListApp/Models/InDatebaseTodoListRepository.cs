@@ -8,9 +8,9 @@ namespace TodoListApp.Models
 {
     public class InDatebaseTodoListRepository : ITodoListRepository
     {
-        private readonly MyDbContext _context;
+        private readonly TodoListDbContext _context;
 
-        public InDatebaseTodoListRepository(MyDbContext context)
+        public InDatebaseTodoListRepository(TodoListDbContext context)
         {
             _context = context;
         }
@@ -24,7 +24,7 @@ namespace TodoListApp.Models
             if (item.Id == default(Guid))
                 throw new ArgumentException("item.Id must not be empty", nameof(item));
 
-            _context.Items.Add(new TodoItemTable { Id = item.Id, Description = item.Description, Name = item.Name, UserId = userId });
+            _context.Items.Add(new Data.TodoItem { Id = item.Id, Description = item.Description, Name = item.Name, UserId = userId });
             _context.SaveChanges();
         }
 

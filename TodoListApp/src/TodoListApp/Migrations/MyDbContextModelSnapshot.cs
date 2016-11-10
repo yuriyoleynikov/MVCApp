@@ -8,7 +8,7 @@ using TodoListApp.Data;
 
 namespace TodoListApp.Migrations
 {
-    [DbContext(typeof(MyDbContext))]
+    [DbContext(typeof(TodoListDbContext))]
     partial class MyDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -17,7 +17,7 @@ namespace TodoListApp.Migrations
                 .HasAnnotation("ProductVersion", "1.0.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TodoListApp.Models.TodoItemTable", b =>
+            modelBuilder.Entity("TodoListApp.Models.TodoItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();

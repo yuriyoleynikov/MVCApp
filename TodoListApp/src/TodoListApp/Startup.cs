@@ -40,7 +40,7 @@ namespace TodoListApp
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = @"Server=(localdb)\mssqllocaldb;Database=TodoListApp;Trusted_Connection=True;";
-            services.AddDbContext<MyDbContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<TodoListDbContext>(options => options.UseSqlServer(connection));
 
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>

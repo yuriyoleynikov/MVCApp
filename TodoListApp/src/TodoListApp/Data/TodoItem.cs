@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TodoListApp.Models
+namespace TodoListApp.Data
 {
-    public class TodoItemTable
+    public class TodoItem
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

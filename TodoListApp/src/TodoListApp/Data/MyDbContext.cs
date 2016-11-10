@@ -7,12 +7,12 @@ using TodoListApp.Models;
 
 namespace TodoListApp.Data
 {
-    public class MyDbContext : DbContext
+    public class TodoListDbContext : DbContext
     {
-        public MyDbContext(DbContextOptions<MyDbContext> options)
+        public TodoListDbContext(DbContextOptions<TodoListDbContext> options)
             : base(options)
         { }        
 
-        public DbSet<TodoItemTable> Items { get; set; }
+        public DbSet<TodoItem> Items { get; set; }
     }
 }

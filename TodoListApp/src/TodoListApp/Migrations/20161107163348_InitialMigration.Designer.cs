@@ -8,7 +8,7 @@ using TodoListApp.Data;
 
 namespace TodoListApp.Migrations
 {
-    [DbContext(typeof(MyDbContext))]
+    [DbContext(typeof(TodoListDbContext))]
     [Migration("20161107163348_InitialMigration")]
     partial class InitialMigration
     {

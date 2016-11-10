@@ -13,7 +13,7 @@ namespace TodoApp.Services.Tests
 {
     public class InDatabaseRepositoryTests
     {
-        private static DbContextOptions<MyDbContext> CreateNewContextOptions()
+        private static DbContextOptions<TodoListDbContext> CreateNewContextOptions()
         {
             // Create a fresh service provider, and therefore a fresh 
             // InMemory database instance.
@@ -23,13 +23,13 @@ namespace TodoApp.Services.Tests
 
             // Create a new options instance telling the context to use an
             // InMemory database and the new service provider.
-            var builder = new DbContextOptionsBuilder<MyDbContext>();
+            var builder = new DbContextOptionsBuilder<TodoListDbContext>();
             builder.UseInMemoryDatabase()
                    .UseInternalServiceProvider(serviceProvider);
 
             return builder.Options;
         }
-        private static bool CompareTodoItem(TodoItem item1, TodoItem item2) =>
+        private static bool CompareTodoItem(TodoListApp.Models.TodoItem item1, TodoListApp.Models.TodoItem item2) =>
             item1 == item2 || (item1.Id == item2.Id && item1.Name == item2.Name && item1.Description == item2.Description);
 
         [Fact]
@@ -37,7 +37,7 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -50,11 +50,11 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                new Action(() => service.AddItem(null, new TodoItem())).ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("userId");
+                new Action(() => service.AddItem(null, new TodoListApp.Models.TodoItem())).ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("userId");
             }
         }
 
@@ -63,7 +63,7 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -76,11 +76,11 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                new Action(() => service.AddItem("user", new TodoItem()))
+                new Action(() => service.AddItem("user", new TodoListApp.Models.TodoItem()))
                     .ShouldThrow<ArgumentException>()
                     .And.ParamName.Should().Be("item");
             }
@@ -91,11 +91,11 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                service.AddItem("user", new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" });
+                service.AddItem("user", new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" });
             }
         }
 
@@ -104,12 +104,12 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                service.AddItem("user", new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" });
-                service.AddItem("user", new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" });
+                service.AddItem("user", new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" });
+                service.AddItem("user", new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 2" });
             }
         }
 
@@ -118,7 +118,7 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -133,7 +133,7 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -148,7 +148,7 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -161,15 +161,15 @@ namespace TodoApp.Services.Tests
         public void DeleteItem_Throws_WhenUserMismatches()
         {
             var options = CreateNewContextOptions();
-            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user1", item);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -182,15 +182,15 @@ namespace TodoApp.Services.Tests
         public void DeleteItem_Succeeds_WhenEverythingIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user1", item);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -204,7 +204,7 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -218,15 +218,15 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsAddedItem_WhenAdded()
         {
             var options = CreateNewContextOptions();
-            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -238,11 +238,11 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsAllAddedItemsInTheSameOrder()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
-            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
-            var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item2 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            var item3 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -250,7 +250,7 @@ namespace TodoApp.Services.Tests
                 service.AddItem("user", item2);
                 service.AddItem("user", item3);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -262,15 +262,15 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsEmpty_WhenAddedItemsForOtherUser()
         {
             var options = CreateNewContextOptions();
-            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user1", item);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -282,16 +282,16 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsEmpty_WhenSingleItemAddedAndDeleted()
         {
             var options = CreateNewContextOptions();
-            var item = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item);
                 service.DeleteItem("user", item.Id);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -303,11 +303,11 @@ namespace TodoApp.Services.Tests
         public void GetTodoListByUser_ReturnsWithoutDeletedItem_WhenItemAddedAndDeleted()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
-            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
-            var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item2 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            var item3 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -316,7 +316,7 @@ namespace TodoApp.Services.Tests
                 service.AddItem("user", item3);
                 service.DeleteItem("user", item2.Id);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -329,7 +329,7 @@ namespace TodoApp.Services.Tests
         {
             var options = CreateNewContextOptions();
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -341,11 +341,11 @@ namespace TodoApp.Services.Tests
         public void GetItemByUserAndId_Succeeds_WhenEverythingIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
-            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
-            var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item2 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            var item3 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -353,11 +353,11 @@ namespace TodoApp.Services.Tests
                 service.AddItem("user", item2);
                 service.AddItem("user", item3);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
-                service.GetItemByUserAndId("user", item1.Id).Should().Match<TodoItem>(x => CompareTodoItem(x, item1));
+                service.GetItemByUserAndId("user", item1.Id).Should().Match<TodoListApp.Models.TodoItem>(x => CompareTodoItem(x, item1));
             }
         }
 
@@ -365,11 +365,11 @@ namespace TodoApp.Services.Tests
         public void GetItemByUserAndId_Succeeds_WhenUserNoHaveThisItemIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
-            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
-            var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item2 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            var item3 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -377,7 +377,7 @@ namespace TodoApp.Services.Tests
                 service.AddItem("user2", item2);
                 service.AddItem("user", item3);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -389,15 +389,15 @@ namespace TodoApp.Services.Tests
         public void GetItemByUserAndId_Fails_WhenNullAsUserIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item1);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -409,15 +409,15 @@ namespace TodoApp.Services.Tests
         public void GetItemByUserAndId_WhenNullAsItemIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item1);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -429,18 +429,18 @@ namespace TodoApp.Services.Tests
         public void Update_Succeeds_WhenEverythingIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
-            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
-            var item3 = new TodoItem { Id = item1.Id, Name = "Item 2" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item2 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            var item3 = new TodoListApp.Models.TodoItem { Id = item1.Id, Name = "Item 2" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item1);
-                service.Update("user", new TodoItem { Id = item1.Id, Description = item2.Description, Name = item2.Name });
+                service.Update("user", new TodoListApp.Models.TodoItem { Id = item1.Id, Description = item2.Description, Name = item2.Name });
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -452,15 +452,15 @@ namespace TodoApp.Services.Tests
         public void Update_Fails_WhenNullAsUserIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item1);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -472,15 +472,15 @@ namespace TodoApp.Services.Tests
         public void Update_WhenNullAsItemIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item1);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
@@ -492,23 +492,23 @@ namespace TodoApp.Services.Tests
         public void Update_Fails_WhenUserNoHaveThisItemIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
-            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
-            var item3 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item2 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            var item3 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 3" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item1);
                 service.AddItem("user2", item2);
             }
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 new Action(() =>
-            service.Update("user2", new TodoItem { Id = item1.Id, Description = item3.Description, Name = item3.Name }))
+            service.Update("user2", new TodoListApp.Models.TodoItem { Id = item1.Id, Description = item3.Description, Name = item3.Name }))
             .ShouldThrow<SecurityException>();
             }
         }
@@ -517,22 +517,22 @@ namespace TodoApp.Services.Tests
         public void Update_Fils_WhenImemIdNotFoundIsPassed()
         {
             var options = CreateNewContextOptions();
-            var item1 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
-            var item2 = new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
+            var item1 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 1" };
+            var item2 = new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Name = "Item 2" };
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 service.AddItem("user", item1);
             }
 
-            using (var repository = new MyDbContext(options))
+            using (var repository = new TodoListDbContext(options))
             {
                 var service = new InDatebaseTodoListRepository(repository);
 
                 new Action(() => service
-                .Update("user", new TodoItem { Id = Guid.NewGuid(), Description = item2.Description, Name = item2.Name }))
+                .Update("user", new TodoListApp.Models.TodoItem { Id = Guid.NewGuid(), Description = item2.Description, Name = item2.Name }))
                 .ShouldThrow<KeyNotFoundException>();
             }
         }
