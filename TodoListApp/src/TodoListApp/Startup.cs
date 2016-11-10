@@ -39,6 +39,9 @@ namespace TodoListApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<TodoListDbContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("TodoListConnection")));
+
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -52,6 +55,9 @@ namespace TodoListApp
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
+
+            services.AddTransient<ITodoListRepository, InDatebaseTodoListRepository>();
+            //services.AddSingleton<ITodoListRepository, InMemoryTodoListRepository>(); // - for Memory
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

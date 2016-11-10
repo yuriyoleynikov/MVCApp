@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TodoListApp", "src\TodoListApp\TodoListApp.xproj", "{573F7956-D1AC-4583-B5B9-5ACB0BEC2933}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{301708FC-6B34-40CB-BBE8-91E475FC7094}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{301708FC-6B34-40CB-BBE8-91E475FC7094}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TodoListApp.Tests", "tests\TodoListApp.Tests\TodoListApp.Tests.xproj", "{6D90D09E-056E-4B8F-B3F7-FF1AB8CFB864}"
 EndProject
