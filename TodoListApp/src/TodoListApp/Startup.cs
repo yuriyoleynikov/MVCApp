@@ -39,8 +39,8 @@ namespace TodoListApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = @"Server=(localdb)\mssqllocaldb;Database=TodoListApp;Trusted_Connection=True;";
-            services.AddDbContext<TodoListDbContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<TodoListDbContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("TodoListConnection")));
 
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
