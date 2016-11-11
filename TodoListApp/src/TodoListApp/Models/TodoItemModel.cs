@@ -9,9 +9,9 @@ namespace TodoListApp.Models
     public class TodoItemModel
     {
         public int Id { get; set; }
-        [Display(Name = "Name")]
+        [Display(Name = "Task Name")]
         public string Name { get; set; }
-        [Display(Name = "Description")]
+        [Display(Name = "Task Description")]
         public string Description { get; set; }
     }    
 }
