@@ -8,7 +8,7 @@ namespace TodoListApp.Models
 {
     public class TodoItemModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         [Display(Name = "Task Name")]
         public string Name { get; set; }
         [Display(Name = "Task Description")]

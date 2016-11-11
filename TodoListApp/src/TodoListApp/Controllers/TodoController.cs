@@ -64,7 +64,7 @@ namespace TodoListApp.Controllers
             var editModel = _todoListRepository.GetItemByUserAndId(UserId, id);
             if (editModel == null)
                 return NotFound();
-            return View(editModel);
+            return View(new TodoItemModel { Id = editModel.Id, Name = editModel.Name, Description = editModel.Description });
         }
 
         [HttpPost]
@@ -91,7 +91,7 @@ namespace TodoListApp.Controllers
             var detailsModel = _todoListRepository.GetItemByUserAndId(UserId, id);
             if (detailsModel == null)
                 return NotFound();
-            return View(detailsModel);
+            return View(new TodoItemModel { Id = detailsModel.Id, Name = detailsModel.Name, Description = detailsModel.Description });
         }
     }
 }
