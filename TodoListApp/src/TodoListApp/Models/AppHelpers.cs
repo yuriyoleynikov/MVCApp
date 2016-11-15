@@ -7,17 +7,10 @@ namespace TodoListApp.Models
 {
     public class AppHelpers
     {
-        public static object ViewDataConvert(object obj)
-        {
-            var todoItemModel = obj as TodoItemModel;
-            if (todoItemModel != null)
-                return new TodoItem { Id = todoItemModel.Id, Name = todoItemModel.Name, Description = todoItemModel.Description };
+        public static object FromViewToData(TodoItemModel item) =>
+            new TodoItem { Id = item.Id, Name = item.Name, Description = item.Description };
 
-            var todoItem = obj as TodoItem;
-            if (todoItem != null)
-                return new TodoItemModel { Id = todoItem.Id, Name = todoItem.Name, Description = todoItem.Description };
-
-            throw new FormatException("Can not convert");
-        }
+        public static object FromDataToView(TodoItem item) =>
+             new TodoItemModel { Id = item.Id, Name = item.Name, Description = item.Description };
     }
 }
