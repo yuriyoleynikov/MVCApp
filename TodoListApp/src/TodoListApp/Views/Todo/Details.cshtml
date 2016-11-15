@@ -1,4 +1,4 @@
-@model TodoListApp.Models.TodoItem
+@model TodoListApp.Models.TodoItemModel
 
 @{
     ViewData["Title"] = "Details";
@@ -9,13 +9,7 @@
 <div>
     <h4>TodoItem</h4>
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Id)
-        </dd>
+    <dl class="dl-horizontal">        
         <dt>
             @Html.DisplayNameFor(model => model.Name)
         </dt>

@@ -64,7 +64,7 @@ namespace TodoListApp.Controllers
             var editModel = _todoListRepository.GetItemByUserAndId(UserId, id);
             if (editModel == null)
                 return NotFound();
-            return View(editModel);
+            return View(AppHelpers.FromDataToView(editModel));            
         }
 
         [HttpPost]
@@ -91,7 +91,7 @@ namespace TodoListApp.Controllers
             var detailsModel = _todoListRepository.GetItemByUserAndId(UserId, id);
             if (detailsModel == null)
                 return NotFound();
-            return View(detailsModel);
+            return View(AppHelpers.FromDataToView(detailsModel));
         }
     }
 }
