@@ -9,6 +9,15 @@ namespace TodoListApp.Models
 {
     public class InFileTodoListRepository : ITodoListRepository
     {
+        private string _dataDirectory;
+
+        public InFileTodoListRepository(string dataDirectory)
+        {
+            _dataDirectory = dataDirectory;
+        }
+
+        private string GetFileName(string userId) => Path.Combine(_dataDirectory, userId + ".yodat");
+
         public void AddItem(string userId, TodoItem item)
         {
             if (userId == null)
@@ -17,13 +26,19 @@ namespace TodoListApp.Models
                 throw new ArgumentNullException(nameof(item));
             if (item.Id == default(Guid))
                 throw new ArgumentException("item.Id must not be empty", nameof(item));
-            
-            using (var file = new FileStream(userId.ToString(), FileMode.OpenOrCreate))
+
+            using (var file = new FileStream(GetFileName(userId), FileMode.Append, FileAccess.Write))
             using (var stream = new BinaryWriter(file))
             {
                 stream.Write(item.Id.ToByteArray());
-                stream.Write(item.Name);
-                stream.Write(item.Description);
+
+                stream.Write(item.Name != null);
+                if (item.Name != null)
+                    stream.Write(item.Name);
+
+                stream.Write(item.Description != null);
+                if (item.Description != null)
+                    stream.Write(item.Description);
             }
         }
 
@@ -34,40 +49,44 @@ namespace TodoListApp.Models
             if (itemId == Guid.Empty)
                 throw new ArgumentException("itemId must not be empty", nameof(itemId));
 
-            long position = 0;
+            var tempFileName = Path.GetTempFileName();
+            var deleted = false;
 
-            using (var file = new FileStream(userId.ToString(), FileMode.Open))
+            if (!File.Exists(GetFileName(userId)))
+                throw new KeyNotFoundException("Item was not found.");
+
+            using (var temp = new FileStream(tempFileName, FileMode.Create, FileAccess.Write))
+            using (var file = new FileStream(GetFileName(userId), FileMode.Open, FileAccess.Read))
             using (var stream = new BinaryReader(file))
+            using (var temp_stream = new BinaryWriter(temp))
             {
                 while (stream.BaseStream.Position < stream.BaseStream.Length)
                 {
-                    position = stream.BaseStream.Position;
-                    var id = Guid.Parse(stream.ReadBytes(16).ToString());
-                    
-                    if (id == itemId)
-                        break;
+                    var id = new Guid(stream.ReadBytes(16));
+                    var name = stream.ReadBoolean() ? stream.ReadString() : null;
+                    var description = stream.ReadBoolean() ? stream.ReadString() : null;
 
-                    var name = stream.ReadString();
-                    var description = stream.ReadString();
+                    if (id != itemId)
+                    {
+                        temp_stream.Write(id.ToByteArray());
+
+                        temp_stream.Write(name != null);
+                        if (name != null)
+                            temp_stream.Write(name);
+
+                        temp_stream.Write(description != null);
+                        if (description != null)
+                            temp_stream.Write(description);
+                    }
+                    else
+                        deleted = true;
                 }
             }
-            using (var file = new FileStream(userId.ToString(), FileMode.Open))
-            using (var stream = new BinaryWriter(file))
-            {
-                stream.BaseStream.Seek(position, SeekOrigin.Current);
-            }
-
-
-                /*var item = _context.Items.SingleOrDefault(x => x.Id == itemId);
-
-                if (item == null)
-                    throw new KeyNotFoundException("Item was not found.");
-                if (item.UserId != userId)
-                    throw new SecurityException("User does not own the item.");
-
-                _context.Items.Remove(item);
-                _context.SaveChanges();*/
-            }
+            if (!deleted)
+                throw new KeyNotFoundException("Item was not found.");
+            File.Delete(GetFileName(userId));
+            File.Move(tempFileName, GetFileName(userId));
+        }
 
         public TodoItem GetItemByUserAndId(string userId, Guid itemId)
         {
@@ -76,127 +95,100 @@ namespace TodoListApp.Models
             if (userId == null)
                 throw new ArgumentNullException(nameof(userId));
 
-            using (var file = new FileStream(userId.ToString(), FileMode.Open))
+            if (!File.Exists(GetFileName(userId)))
+                return null;
+
+            using (var file = new FileStream(GetFileName(userId), FileMode.Open, FileAccess.Read))
             using (var stream = new BinaryReader(file))
             {
                 while (stream.BaseStream.Position < stream.BaseStream.Length)
                 {
-                    var id = Guid.Parse(stream.ReadBytes(16).ToString());
-                    var name = stream.ReadString();
-                    var description = stream.ReadString();
+                    var id = new Guid(stream.ReadBytes(16));
+                    var name = stream.ReadBoolean() ? stream.ReadString() : null;
+                    var description = stream.ReadBoolean() ? stream.ReadString() : null;
 
                     if (id == itemId)
                         return new TodoItem { Id = id, Name = name, Description = description };
                 }
                 return null;
-            }            
+            }
         }
 
         public IEnumerable<TodoItem> GetTodoListByUser(string userId)
         {
             if (userId == null)
                 throw new ArgumentNullException(nameof(userId));
+            return GetTodoListByUserInner(userId);
+        }
 
-            using (var file = new FileStream(userId.ToString(), FileMode.Open))
+        public IEnumerable<TodoItem> GetTodoListByUserInner(string userId)
+        {
+            if (!File.Exists(GetFileName(userId)))
+                yield break;
+
+            using (var file = new FileStream(GetFileName(userId), FileMode.Open, FileAccess.Read))
             using (var stream = new BinaryReader(file))
             {
-                while (stream.BaseStream.CanRead)
+                while (stream.BaseStream.Position < stream.BaseStream.Length)
                 {
-                    var id = Guid.Parse(stream.ReadBytes(16).ToString());
-                    var name = stream.Read().ToString();
-                    var description = stream.Read().ToString();
+                    var id = new Guid(stream.ReadBytes(16));
+                    var name = stream.ReadBoolean() ? stream.ReadString() : null;
+                    var description = stream.ReadBoolean() ? stream.ReadString() : null;
 
                     yield return new TodoItem { Id = id, Name = name, Description = description };
                 }
+                yield break;
             }
         }
 
         public void Update(string userId, TodoItem item)
         {
-            throw new NotImplementedException();
-        }
-
-        /*
-        private readonly TodoListDbContext _context;
-
-        public InDatebaseTodoListRepository(TodoListDbContext context)
-        {
-            _context = context;
-        }
-
-        public void AddItem(string userId, TodoItem item)
-        {
-            if (userId == null)
-                throw new ArgumentNullException(nameof(userId));
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
-            if (item.Id == default(Guid))
-                throw new ArgumentException("item.Id must not be empty", nameof(item));
-
-            _context.Items.Add(new Data.TodoItem { Id = item.Id, Description = item.Description, Name = item.Name, UserId = userId });
-            _context.SaveChanges();
-        }
-
-        public void DeleteItem(string userId, Guid itemId)
-        {
-            if (userId == null)
-                throw new ArgumentNullException(nameof(userId));
-            if (itemId == Guid.Empty)
-                throw new ArgumentException("itemId must not be empty", nameof(itemId));
-
-            var item = _context.Items.SingleOrDefault(x => x.Id == itemId);
-
-            if (item == null)
-                throw new KeyNotFoundException("Item was not found.");
-            if (item.UserId != userId)
-                throw new SecurityException("User does not own the item.");
-
-            _context.Items.Remove(item);
-            _context.SaveChanges();
-        }
-
-        public IEnumerable<TodoItem> GetTodoListByUser(string userId)
-        {
-            if (userId == null)
-                throw new ArgumentNullException(nameof(userId));
-
-            return _context.Items.Where(x => x.UserId == userId)
-                .Select(x => new TodoItem { Id = x.Id, Name = x.Name, Description = x.Description });
-        }
-
-        public TodoItem GetItemByUserAndId(string userId, Guid itemId)
-        {
-            if (itemId == Guid.Empty)
-                throw new ArgumentException("itemId must not be empty", nameof(itemId));
-            if (userId == null)
-                throw new ArgumentNullException(nameof(userId));
-
-            var item = _context.Items.SingleOrDefault(x => x.Id == itemId);
-
-            if (item != null)
-                if (userId == item.UserId)
-                    return new TodoItem { Id = item.Id, Name = item.Name, Description = item.Description };
-            return null;
-        }
-
-        public void Update(string userId, TodoItem item)
-        {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
             if (userId == null)
                 throw new ArgumentNullException(nameof(userId));
 
-            var _item = _context.Items.SingleOrDefault(x => x.Id == item.Id);
-
-            if (_item == null)
+            if (!File.Exists(GetFileName(userId)))
                 throw new KeyNotFoundException("Item was not found.");
-            if (userId != _item.UserId)
-                throw new SecurityException("User does not own the item.");
 
-            _item.Name = item.Name;
-            _item.Description = item.Description;
-            _context.SaveChanges();
+            long position = -1;
+
+            using (var file = new FileStream(GetFileName(userId), FileMode.Open, FileAccess.Read))
+            using (var stream = new BinaryReader(file))
+            {
+                while (stream.BaseStream.Position < stream.BaseStream.Length)
+                {
+                    var id = new Guid(stream.ReadBytes(16));
+
+                    var _position = stream.BaseStream.Position;
+
+                    var name = stream.ReadBoolean() ? stream.ReadString() : null;
+                    var description = stream.ReadBoolean() ? stream.ReadString() : null;
+
+                    if (id == item.Id)
+                    {
+                        position = _position;
+                        break;
+                    }
+                }
+            }
+
+            if (position != -1)
+                using (var file = new FileStream(GetFileName(userId), FileMode.Open, FileAccess.Write))
+                using (var stream = new BinaryWriter(file))
+                {
+                    stream.BaseStream.Seek(position, SeekOrigin.Begin);
+
+                    stream.Write(item.Name != null);
+                    if (item.Name != null)
+                        stream.Write(item.Name);
+
+                    stream.Write(item.Description != null);
+                    if (item.Description != null)
+                        stream.Write(item.Description);
+                }
+            else
+                throw new KeyNotFoundException("Item was not found.");
         }
-         */
     }
 }

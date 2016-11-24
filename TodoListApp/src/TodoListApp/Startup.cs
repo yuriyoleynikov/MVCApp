@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using TodoListApp.Data;
 using TodoListApp.Models;
 using TodoListApp.Services;
+using System.IO;
 
 namespace TodoListApp
 {
@@ -45,7 +46,7 @@ namespace TodoListApp
             // Add framework services.
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
@@ -56,8 +57,10 @@ namespace TodoListApp
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 
-            services.AddTransient<ITodoListRepository, InDatebaseTodoListRepository>();
+            services.AddSingleton<ITodoListRepository, InFileTodoListRepository>
+                (sp => new InFileTodoListRepository(Path.Combine(sp.GetRequiredService<IHostingEnvironment>().ContentRootPath, "App_Data")));
             //services.AddSingleton<ITodoListRepository, InMemoryTodoListRepository>(); // - for Memory
+            //services.AddTransient<ITodoListRepository, InDatebaseTodoListRepository>(); // - for DB
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

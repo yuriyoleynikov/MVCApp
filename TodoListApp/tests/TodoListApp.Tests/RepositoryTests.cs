@@ -15,7 +15,7 @@ namespace TodoListApp.Tests
 
         private static bool CompareTodoItem(TodoListApp.Models.TodoItem item1, TodoListApp.Models.TodoItem item2) =>
             item1 == item2 || (item1.Id == item2.Id && item1.Name == item2.Name && item1.Description == item2.Description);
-
+        
         [Fact]
         public void GetTodoListByUser_ReturnsEmpty_WhenItIsNew()
         {
@@ -66,7 +66,7 @@ namespace TodoListApp.Tests
             repository.AddItem("user", new TodoItem { Id = Guid.NewGuid(), Name = "Item 1" });
             repository.AddItem("user", new TodoItem { Id = Guid.NewGuid(), Name = "Item 2" });
         }
-
+        
         [Fact]
         public void DeleteItem_Throws_WhenEmptyUserIdPassed()
         {
@@ -105,7 +105,7 @@ namespace TodoListApp.Tests
 
             repository = GetRepository();
             new Action(() => repository.DeleteItem("user2", item.Id))
-                .ShouldThrow<SecurityException>();
+                .ShouldThrow<KeyNotFoundException>();
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace TodoListApp.Tests
             new Action(() => repository.DeleteItem("user1", item.Id))
                 .ShouldNotThrow();
         }
-
+        
         [Fact]
         public void GetTodoListByUser_Throws_WhenNullPassed()
         {
@@ -316,7 +316,7 @@ namespace TodoListApp.Tests
 
             repository = GetRepository();
             new Action(() => repository.Update("user2", new TodoItem { Id = item1.Id, Description = item3.Description, Name = item3.Name }))
-                .ShouldThrow<SecurityException>();
+                .ShouldThrow<KeyNotFoundException>();
         }
 
         [Fact]

@@ -37,10 +37,8 @@ namespace TodoListApp.Models
 
             var item = _context.Items.SingleOrDefault(x => x.Id == itemId);
 
-            if (item == null)
+            if (item == null || item.UserId != userId)
                 throw new KeyNotFoundException("Item was not found.");
-            if (item.UserId != userId)
-                throw new SecurityException("User does not own the item.");
 
             _context.Items.Remove(item);
             _context.SaveChanges();
@@ -79,10 +77,8 @@ namespace TodoListApp.Models
 
             var _item = _context.Items.SingleOrDefault(x => x.Id == item.Id);
 
-            if (_item == null)
+            if (_item == null || userId != _item.UserId)
                 throw new KeyNotFoundException("Item was not found.");
-            if (userId != _item.UserId)
-                throw new SecurityException("User does not own the item.");
 
             _item.Name = item.Name;
             _item.Description = item.Description;
