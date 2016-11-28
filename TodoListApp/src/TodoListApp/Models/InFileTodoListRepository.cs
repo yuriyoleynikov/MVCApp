@@ -18,9 +18,9 @@ namespace TodoListApp.Models
 
         private string GetFileName(string userId) => Path.Combine(_dataDirectory, userId + ".yodat");
 
-        private bool NotEndOfStream(BinaryReader stream) => stream.BaseStream.Position < stream.BaseStream.Length;
+        private static bool NotEndOfStream(BinaryReader stream) => stream.BaseStream.Position < stream.BaseStream.Length;
 
-        private TodoItem ReadTodoItem(BinaryReader stream)
+        private static TodoItem ReadTodoItem(BinaryReader stream)
         {
             var id = new Guid(stream.ReadBytes(16));
             var name = stream.ReadBoolean() ? stream.ReadString() : null;
@@ -29,7 +29,7 @@ namespace TodoListApp.Models
             return new TodoItem { Id = id, Name = name, Description = description };
         }
 
-        private void WriteTodoItem(BinaryWriter stream, TodoItem item)
+        private static void WriteTodoItem(BinaryWriter stream, TodoItem item)
         {
             stream.Write(item.Id.ToByteArray());
 
@@ -68,21 +68,28 @@ namespace TodoListApp.Models
             var tempFileName = Path.GetTempFileName();
             var deleted = false;
 
-            using (var stream = new BinaryReader(File.Open(GetFileName(userId), FileMode.Open, FileAccess.Read)))
-            using (var tempStream = new BinaryWriter(File.Open(tempFileName, FileMode.Create, FileAccess.Write)))
-                while (NotEndOfStream(stream))
-                {
-                    var item = ReadTodoItem(stream);
+            try
+            {
+                using (var stream = new BinaryReader(File.Open(GetFileName(userId), FileMode.Open, FileAccess.Read)))
+                using (var tempStream = new BinaryWriter(File.Open(tempFileName, FileMode.Create, FileAccess.Write)))
+                    while (NotEndOfStream(stream))
+                    {
+                        var item = ReadTodoItem(stream);
 
-                    if (item.Id != itemId)
-                        WriteTodoItem(tempStream, item);
-                    else
-                        deleted = true;
-                }
+                        if (item.Id != itemId)
+                            WriteTodoItem(tempStream, item);
+                        else
+                            deleted = true;
+                    }
 
-            if (!deleted)
-                throw new KeyNotFoundException("Item was not found.");
-
+                if (!deleted)
+                    throw new KeyNotFoundException("Item was not found.");
+            }
+            catch
+            {
+                File.Delete(tempFileName);
+                throw;
+            }
             File.Delete(GetFileName(userId));
             File.Move(tempFileName, GetFileName(userId));
         }
@@ -138,28 +145,36 @@ namespace TodoListApp.Models
                 throw new KeyNotFoundException("Item was not found.");
 
             var tempFileName = Path.GetTempFileName();
-            var willUpdate = false;
+            var updated = false;
 
-            using (var stream = new BinaryReader(File.Open(GetFileName(userId), FileMode.Open, FileAccess.Read)))
-            using (var tempStream = new BinaryWriter(File.Open(tempFileName, FileMode.Create, FileAccess.Write)))
-                while (NotEndOfStream(stream))
-                {
-                    var _item = ReadTodoItem(stream);
+            try
+            {
+                using (var stream = new BinaryReader(File.Open(GetFileName(userId), FileMode.Open, FileAccess.Read)))
+                using (var tempStream = new BinaryWriter(File.Open(tempFileName, FileMode.Create, FileAccess.Write)))
+                    while (NotEndOfStream(stream))
+                    {
+                        var _item = ReadTodoItem(stream);
 
-                    if (_item.Id != item.Id)
-                        WriteTodoItem(tempStream, _item);
-                    else
-                        willUpdate = true;
-                }
+                        if (_item.Id != item.Id)
+                            WriteTodoItem(tempStream, _item);
+                        else
+                        {
+                            updated = true;
+                            WriteTodoItem(tempStream, item);
+                        }
+                    }
 
-            if (!willUpdate)
-                throw new KeyNotFoundException("Item was not found.");
+                if (!updated)
+                    throw new KeyNotFoundException("Item was not found.");
+            }
+            catch
+            {
+                File.Delete(tempFileName);
+                throw;
+            }
 
             File.Delete(GetFileName(userId));
             File.Move(tempFileName, GetFileName(userId));
-
-            using (var stream = new BinaryWriter(File.Open(GetFileName(userId), FileMode.Append, FileAccess.Write)))
-                WriteTodoItem(stream, item);
         }
     }
 }
