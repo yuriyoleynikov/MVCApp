@@ -123,7 +123,7 @@ namespace TodoListApp.Models
             return GetTodoListByUserInner(userId);
         }
 
-        public IEnumerable<TodoItem> GetTodoListByUserInner(string userId)
+        private IEnumerable<TodoItem> GetTodoListByUserInner(string userId)
         {
             if (!File.Exists(GetFileName(userId)))
                 yield break;
@@ -153,10 +153,10 @@ namespace TodoListApp.Models
                 using (var tempStream = new BinaryWriter(File.Open(tempFileName, FileMode.Create, FileAccess.Write)))
                     while (NotEndOfStream(stream))
                     {
-                        var _item = ReadTodoItem(stream);
+                        var currentItem = ReadTodoItem(stream);
 
-                        if (_item.Id != item.Id)
-                            WriteTodoItem(tempStream, _item);
+                        if (currentItem.Id != item.Id)
+                            WriteTodoItem(tempStream, currentItem);
                         else
                         {
                             updated = true;
